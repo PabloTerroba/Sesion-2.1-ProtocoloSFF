@@ -1,0 +1,10 @@
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\bin\Debug\netcoreapp2.1\CodecLibrary.deps.json
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\bin\Debug\netcoreapp2.1\CodecLibrary.dll
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\bin\Debug\netcoreapp2.1\CodecLibrary.pdb
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\obj\Debug\netcoreapp2.1\CodecLibrary.csproj.AssemblyReference.cache
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\obj\Debug\netcoreapp2.1\CodecLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\obj\Debug\netcoreapp2.1\CodecLibrary.AssemblyInfoInputs.cache
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\obj\Debug\netcoreapp2.1\CodecLibrary.AssemblyInfo.cs
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\obj\Debug\netcoreapp2.1\CodecLibrary.csproj.CoreCompileInputs.cache
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\obj\Debug\netcoreapp2.1\CodecLibrary.dll
+C:\Users\pablo\source\repos\Sesion 2.1 - SFF Protocol\CodecLibrary\obj\Debug\netcoreapp2.1\CodecLibrary.pdb
