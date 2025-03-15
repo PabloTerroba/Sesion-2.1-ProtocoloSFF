@@ -26,7 +26,10 @@ namespace CodecLibrary
         {
             _state = newState;
         }
-
+        public State GetState()
+        {
+            return _state;
+        }
         public void Send(Packet packet)
         {
             Console.WriteLine($"Enviando paquete {packet.Type}");
@@ -37,7 +40,14 @@ namespace CodecLibrary
         {
             _packetHandlerMap[type] = handler;
         }
-
+        public Packet GetReceivedPacket()
+        {
+            //Implementar recepción de paquete con Sockets UDP en puerto correspondiente
+            byte [] body = null;
+            int bodyLength = 0;
+            Packet packet= new Packet(PacketBodyType.NewFile,bodyLength,body);
+            return packet;
+        }
         public void HandleReceivedPacket(Packet packet)
         {
             if (_packetHandlerMap.ContainsKey(packet.Type))

@@ -4,7 +4,14 @@ using System.Text;
 
 namespace CodecLibrary.StateMachine
 {
-    internal class ReceriverState
+    public abstract class ReceiverState : State
     {
-    }
+        protected Receiver _receiver;
+
+        // Constructor para inicializar el contexto (Receiver)
+        public ReceiverState(Receiver receiver)
+        {
+            _receiver = receiver;
+        }
+   }
 }

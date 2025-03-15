@@ -7,7 +7,7 @@ namespace CodecLibrary.Handlers
 {
     public class AckNewFileHandler : IPacketHandler
     {
-        private Sender _sender;
+        private readonly Sender _sender;
 
         public AckNewFileHandler(Sender sender)
         {
@@ -16,12 +16,21 @@ namespace CodecLibrary.Handlers
 
         public void Handle(Packet packet)
         {
-            // Aquí procesas el ACK, verificas si todo está bien
-            Console.WriteLine("ACK de NewFile recibido.");
+            // Verifica si el paquete es un ACK de NewFile
+            if (packet.Type == PacketBodyType.AckNewFile)
+            {
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] ACK recibido para NewFile.");
 
-            // Si el ACK es válido, cambias de estado
-            _sender.ChangeState(new SendingFileState(_sender));  // Cambiar de estado a 'SendingFile'
+                if (_sender.GetState() is WaitingForAckState waitingForAckState)
+                {
+                    waitingForAckState.Acknowledge();
+                }
+
+                // Después de que el ACK ha sido recibido, cambiamos de estado
+                _sender.ChangeState(new SendingFileState(_sender));  // Cambiar al siguiente estado
+            }
         }
     }
+
 
 }
