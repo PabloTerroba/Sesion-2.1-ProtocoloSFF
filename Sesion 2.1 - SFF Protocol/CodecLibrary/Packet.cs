@@ -14,7 +14,7 @@ namespace CodecLibrary
         AckDiscon = 30
     }
 
-    class Packet
+    public class Packet
     {
         public PacketBodyType _type; // { get; private set; }
         public int _bodyLength; // { get; private set; }
