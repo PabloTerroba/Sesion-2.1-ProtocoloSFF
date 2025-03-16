@@ -1,13 +1,16 @@
-﻿using CodecLibrary.StateMachine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CodecLibrary.Messages;
+using CodecLibrary.States;
+using CodecLibrary.Networking;
+
 
 namespace CodecLibrary.Handlers
 {
     public class AckNewFileHandler : IPacketHandler
     {
-        private readonly Sender _sender;
+        private Sender _sender;
 
         public AckNewFileHandler(Sender sender)
         {
@@ -16,21 +19,12 @@ namespace CodecLibrary.Handlers
 
         public void Handle(Packet packet)
         {
-            // Verifica si el paquete es un ACK de NewFile
-            if (packet.Type == PacketBodyType.AckNewFile)
+            if (packet is AckNewFile)
             {
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] ACK recibido para NewFile.");
-
-                if (_sender.GetState() is WaitingForAckState waitingForAckState)
-                {
-                    waitingForAckState.Acknowledge();
-                }
-
-                // Después de que el ACK ha sido recibido, cambiamos de estado
-                _sender.ChangeState(new SendingFileState(_sender));  // Cambiar al siguiente estado
+                Console.WriteLine("✅ Transferencia aceptada. Iniciando envío de datos.");
+                _sender.ChangeState(new SendingFileState(_sender));
             }
         }
     }
-
 
 }

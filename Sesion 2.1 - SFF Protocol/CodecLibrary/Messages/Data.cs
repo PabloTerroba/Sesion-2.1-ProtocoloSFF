@@ -5,7 +5,7 @@ using System.Text;
 namespace CodecLibrary.Messages
 {
 
-    class Data : Packet
+    public class Data : Packet
     {
         public int SequenceNumber { get; }
         public byte[] Content { get; }
