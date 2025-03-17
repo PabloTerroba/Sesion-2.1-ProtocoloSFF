@@ -19,9 +19,7 @@ public class WaitingForAckNewFileState : SenderState
         // Enviar el paquete NewFile
         _sender.SendPacket(newFileCod);
         // Aquí se podría definir un manejador para ACKNewFile
-        _packetHandlerMap.Add((int)PacketBodyType.AckNewFile, new AckNewFileHandler(sender));
-        _packetHandlerMap.Add((int)PacketBodyType.AckData, new AckDataHandler());
-        _packetHandlerMap.Add((int)PacketBodyType.AckDiscon, new AckDisconHandler(sender));
+        _packetHandlerMap.Add(PacketBodyType.AckNewFile, new AckNewFileHandler(sender));
     }
 
     public override void HandleEvents()

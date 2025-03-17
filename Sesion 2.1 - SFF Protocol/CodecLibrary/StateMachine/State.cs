@@ -12,7 +12,7 @@ public abstract class State
     public State()
     {
         // Mapear tipos de mensajes a sus manejadores
-        _packetHandlerMap = new Dictionary<int, IPacketHandler>();
+        _packetHandlerMap = new Dictionary<PacketBodyType, IPacketHandler>();
     }
 
     public virtual void HandleEvents()
