@@ -1,10 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CodecLibrary;
+using CodecLibrary.Messages;
+using CodecLibrary.StateMachine;
+using System;
 
-namespace CodecLibrary.Handlers
+public class AckDataHandler : IPacketHandler
 {
-    internal class AckDataHandler
+    private Sender _sender;
+    private SendingFileState _sendingState;
+
+    public AckDataHandler(Sender sender, SendingFileState sendingState)
     {
+        _sender = sender;
+        _sendingState = sendingState;
+    }
+
+    public void Handle(Packet packet)
+    {
+        if (packet is AckData ackDataPacket)
+        {
+            _sendingState.AcknowledgePacket(ackDataPacket.SequenceNumber);
+        }
     }
 }

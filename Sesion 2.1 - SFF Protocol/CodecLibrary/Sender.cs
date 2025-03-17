@@ -1,61 +1,62 @@
-﻿using CodecLibrary.Handlers;
-using CodecLibrary.StateMachine;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.IO;
+using CodecLibrary;
 
-namespace CodecLibrary
+public class Sender
 {
-    public class Sender
+    private UdpClient _udpClient;
+    private IPEndPoint _endPoint;
+    private string _filePath;
+    private State _state;
+
+    public Sender(UdpClient udpClient, string filePath, string serverAddress, int port)
     {
-        private State _state;
-        private Dictionary<PacketBodyType, IPacketHandler> _packetHandlerMap;
-
-        public Sender()
-        {
-            _state = new WaitingForAckState(this);  // Inicializa con el primer estado
-            _packetHandlerMap = new Dictionary<PacketBodyType, IPacketHandler>();
-        }
-
-        public void Run()
-        {
-            // Ejecuta el flujo de eventos del emisor
-            _state.HandleEvents();
-        }
-
-        public void ChangeState(State newState)
-        {
-            _state = newState;
-        }
-        public State GetState()
-        {
-            return _state;
-        }
-        public void Send(Packet packet)
-        {
-            Console.WriteLine($"Enviando paquete {packet.Type}");
-            // Implementar el envío de paquete (puedes usar UDP/TCP)
-        }
-
-        public void RegisterHandler(PacketBodyType type, IPacketHandler handler)
-        {
-            _packetHandlerMap[type] = handler;
-        }
-        public Packet GetReceivedPacket()
-        {
-            //Implementar recepción de paquete con Sockets UDP en puerto correspondiente
-            byte [] body = null;
-            int bodyLength = 0;
-            Packet packet= new Packet(PacketBodyType.NewFile,bodyLength,body);
-            return packet;
-        }
-        public void HandleReceivedPacket(Packet packet)
-        {
-            if (_packetHandlerMap.ContainsKey(packet.Type))
-            {
-                _packetHandlerMap[packet.Type].Handle(packet);
-            }
-        }
+        _udpClient = udpClient;
+        _endPoint = new IPEndPoint(IPAddress.Parse(serverAddress), port);
+        _filePath = filePath;
+        _state = new WaitingForAckNewFileState(this); // Estado inicial
     }
 
-    
+
+    public void HandleEvents()
+    {
+        _state.HandleEvents();
+    }
+    public void ChangeState(State state)
+    {
+        _state = state;
+        this.HandleEvents();
+    }
+
+    public UdpClient GetUdpClient()
+    {
+        return _udpClient;
+    }
+
+    public string GetFilePath()
+    {
+        return _filePath;
+    }
+
+    public IPEndPoint GetEndPoint()
+    {
+        return _endPoint;
+    }
+
+    // Función para enviar un paquete UDP
+    public void SendPacket(byte[] data)
+    {
+        _udpClient.Send(data, data.Length, _endPoint);
+        Console.WriteLine("[Sender] Paquete enviado.");
+    }
+
+    // Función para recibir un paquete UDP
+    public byte[] ReceivePacket()
+    {
+        var receivedData = _udpClient.Receive(ref _endPoint);
+        Console.WriteLine("[Sender] Paquete recibido.");
+        return receivedData;
+    }
 }

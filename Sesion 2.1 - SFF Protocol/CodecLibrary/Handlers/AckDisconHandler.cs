@@ -1,10 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CodecLibrary;
+using CodecLibrary.Handlers;
+using CodecLibrary.Messages;
+using CodecLibrary.StateMachine;
+using System;
 
-namespace CodecLibrary.Handlers
+public class AckDisconHandler : IPacketHandler
 {
-    internal class AckDisconHandler
+    private Sender _sender;
+    private SendingFileState _state;
+
+    public AckDisconHandler(Sender sender, SendingFileState state)
     {
+        _sender = sender;
+        _state = state;
+    }
+
+    public void Handle(Packet packet)
+    {
+        if (packet is AckDiscon)
+        {
+            Console.WriteLine("ACK de Discon recibido. Finalizando conexión.");
+            _state.AcknowledgeDiscon();
+        }
+        else
+        {
+            Console.WriteLine("Paquete inesperado recibido en espera de AckDiscon.");
+        }
     }
 }

@@ -1,10 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CodecLibrary.Messages;
+using CodecLibrary.StateMachine;
 
 namespace CodecLibrary.Handlers
 {
-    internal class DataHandler
+    public class DataHandler : IPacketHandler
     {
+        private ReceivingFileState _receivingFileState;
+
+        public DataHandler(ReceivingFileState receivingFileState)
+        {
+            _receivingFileState = receivingFileState;
+        }
+
+        public void Handle(Packet packet)
+        {
+            if (packet is Data dataPacket)
+            {
+                _receivingFileState.WriteData(dataPacket.Body, dataPacket.BodyLength, dataPacket.SequenceNumber);
+            }
+        }
     }
 }

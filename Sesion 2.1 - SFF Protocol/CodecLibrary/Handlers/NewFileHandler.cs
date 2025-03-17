@@ -32,7 +32,7 @@ namespace CodecLibrary.Handlers
             _receiver.Send(ackNewFilePacket);
             Console.WriteLine($"ACK enviado para el archivo: {newFilePacket.FileName}");
 
-            _receiver.ChangeState(new ReceivingFileState(_receiver));
+            
         }
     }
 }

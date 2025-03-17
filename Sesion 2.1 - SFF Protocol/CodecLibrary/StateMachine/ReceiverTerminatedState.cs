@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CodecLibrary.StateMachine
 {
-    internal class TerminatedState
+    internal class ReceiverTerminatedState
     {
     }
 }

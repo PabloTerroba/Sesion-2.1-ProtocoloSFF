@@ -1,49 +1,59 @@
-﻿using CodecLibrary.Handlers;
-using CodecLibrary.StateMachine;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 
-namespace CodecLibrary
+class Receiver
 {
-    public class Receiver
+    private UdpClient _udpServer;
+    private IPEndPoint _remoteEndPoint;
+    private FileStream _fileStream;
+    private string _fileName;
+    private bool _receivingFile = false;
+
+    public Receiver(UdpClient udpServer)
     {
-        private State _state;
-        private Dictionary<PacketBodyType, IPacketHandler> _packetHandlerMap;
+        _udpServer = udpServer;
+        _remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+    }
 
-        public Receiver()
-        {
-            _state = new WaitingForRequestState(this);
-            _packetHandlerMap = new Dictionary<PacketBodyType, IPacketHandler>();
-        }
-        public void ChangeState(State newState)
-        {
-            _state = newState;
-        }
-        public void Send(Packet packet)
-        {
-            Console.WriteLine($"Enviando paquete {packet.Type}");
-            // Implementar el envío de paquete (puedes usar UDP/TCP)
-        }
-        public Packet GetReceivedPacket()
-        {
-            //Implementar recepción de paquete con Sockets UDP en puerto correspondiente
-            byte[] body = null;
-            int bodyLength = 0;
-            Packet packet = new Packet(PacketBodyType.NewFile, bodyLength, body);
-            return packet;
-        }
-        public void RegisterHandler(PacketBodyType type, IPacketHandler handler)
-        {
-            _packetHandlerMap[type] = handler;
-        }
+    public void HandleEvents()
+    {
+        byte[] receivedData = _udpServer.Receive(ref _remoteEndPoint);
+        ProcessPacket(receivedData);
+    }
 
-        public void HandleReceivedPacket(Packet packet)
+    private void ProcessPacket(byte[] packet)
+    {
+        byte messageType = packet[0];
+
+        switch (messageType)
         {
-            if (_packetHandlerMap.ContainsKey(packet.Type))
-            {
-                _packetHandlerMap[packet.Type].Handle(packet);
-            }
+            case 1: // NewFile
+                _fileName = Encoding.UTF8.GetString(packet, 1, packet.Length - 1);
+                _fileStream = new FileStream(_fileName, FileMode.Create, FileAccess.Write);
+                _receivingFile = true;
+                Console.WriteLine($"[Receiver] Recibiendo archivo: {_fileName}");
+                break;
+
+            case 2: // Data
+                if (_receivingFile && _fileStream != null)
+                {
+                    _fileStream.Write(packet, 1, packet.Length - 1);
+                    Console.WriteLine($"[Receiver] Recibidos {packet.Length - 1} bytes.");
+                }
+                break;
+
+            case 3: // Discon
+                _fileStream?.Close();
+                _receivingFile = false;
+                Console.WriteLine("[Receiver] Transferencia finalizada. Archivo guardado.");
+                break;
+
+            default:
+                Console.WriteLine("[Receiver] Mensaje desconocido.");
+                break;
         }
     }
 }

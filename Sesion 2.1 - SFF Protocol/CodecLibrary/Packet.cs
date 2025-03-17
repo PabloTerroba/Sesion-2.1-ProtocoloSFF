@@ -11,7 +11,9 @@ namespace CodecLibrary
         Data = 2,
         AckData = 20,
         Discon = 3,
-        AckDiscon = 30
+        AckDiscon = 30,
+        EndOfFile = 4,
+        AckEndOfFile= 40
     }
 
     public class Packet

@@ -8,12 +8,11 @@ namespace CodecLibrary.Messages
     class Data : Packet
     {
         public int SequenceNumber { get; }
-        public byte[] Content { get; }
 
-        public Data(int sequenceNumber, byte[] content, int bodyLength, byte[] body) : base(PacketBodyType.Data, bodyLength, body)
+
+        public Data(int sequenceNumber, int bodyLength, byte[] body) : base(PacketBodyType.Data, bodyLength, body)
         {
             SequenceNumber = sequenceNumber;
-            Content = content;
         }
     }
 }

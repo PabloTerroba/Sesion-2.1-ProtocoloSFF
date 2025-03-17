@@ -1,36 +1,82 @@
-﻿using CodecLibrary.StateMachine;
+﻿using CodecLibrary.Handlers;
+using CodecLibrary;
+using CodecLibrary.Messages;
+using CodecLibrary.StateMachine;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Net.Sockets;
+using System.Threading;
 
-namespace CodecLibrary.Handlers
+public class AckNewFileHandler : IPacketHandler
 {
-    public class AckNewFileHandler : IPacketHandler
+    private Sender _sender;
+    private const int MaxRetries = 5; // Número máximo de intentos
+    private int _currentRetries = 0;
+    private TimeSpan _timeout = TimeSpan.FromSeconds(2); // Timeout inicial de 2 segundos
+    private Timer _retryTimer; // El temporizador para manejar los reintentos
+
+    public AckNewFileHandler(Sender sender)
     {
-        private readonly Sender _sender;
+        _sender = sender;
+    }
 
-        public AckNewFileHandler(Sender sender)
+    public void Handle(Packet packet)
+    {
+        // Verifica que el paquete recibido sea del tipo AckNewFile
+        if (packet is AckNewFile ackNewFilePacket)
         {
-            _sender = sender;
+            Console.WriteLine("ACK de NewFile recibido correctamente.");
+            _sender.ChangeState(new SendingFileState(_sender, _sender.GetFilePath())); // Cambiar al siguiente estado
         }
-
-        public void Handle(Packet packet)
+        else
         {
-            // Verifica si el paquete es un ACK de NewFile
-            if (packet.Type == PacketBodyType.AckNewFile)
-            {
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] ACK recibido para NewFile.");
-
-                if (_sender.GetState() is WaitingForAckState waitingForAckState)
-                {
-                    waitingForAckState.Acknowledge();
-                }
-
-                // Después de que el ACK ha sido recibido, cambiamos de estado
-                _sender.ChangeState(new SendingFileState(_sender));  // Cambiar al siguiente estado
-            }
+            // Si no fue exitoso, manejar el error
+            Console.WriteLine("Error:Paquete recibido no es ACKNewFile.");
+            RetrySendingNewFile(); // Reintentar enviar el NewFile
         }
     }
 
+    private void RetrySendingNewFile()
+    {
+        if (_currentRetries < MaxRetries)
+        {
+            _currentRetries++;
+            Console.WriteLine($"Reintentando enviar el paquete NewFile. Intento {_currentRetries} de {MaxRetries}.");
 
+            // Aumentar el timeout para el siguiente intento
+            _timeout = _timeout.Add(_timeout);  // Duplicamos el tiempo de espera
+
+            // Reenviar el paquete NewFile después del timeout
+            SendNewFilePacketWithRetry();
+
+            // Crear el temporizador para manejar el reintento asincrónicamente
+            _retryTimer = new Timer(RetryTimerCallback, null, _timeout, Timeout.InfiniteTimeSpan);
+        }
+        else
+        {
+            // Si hemos superado el número máximo de intentos, fallamos la operación
+            Console.WriteLine("Se han agotado los intentos. La operación ha fallado.");
+            _sender.ChangeState(new SenderTerminatedState(_sender)); // Finalizamos la operación
+        }
+    }
+
+    // Este es el callback del temporizador que se ejecutará cuando termine el tiempo de espera
+    private void RetryTimerCallback(object state)
+    {
+        // Reintentar el envío de NewFile
+        RetrySendingNewFile();
+    }
+
+    private void SendNewFilePacketWithRetry()
+    {
+        // Crear el paquete NewFile con el nombre del archivo
+        string fileName = _sender.GetFilePath().Split('\\').Last(); // Obtenemos el nombre del archivo
+        NewFile newFilePacket = new NewFile(fileName, 0, new byte[0]);
+
+        // Codificación del paquete (asumimos que la codificación es la correcta)
+        byte[] newFileCod = new byte[0];
+
+        // Enviar el paquete NewFile
+        _sender.SendPacket(newFileCod); // Reenviar el paquete
+    }
 }

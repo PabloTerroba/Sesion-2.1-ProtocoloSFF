@@ -21,6 +21,7 @@ namespace CodecLibrary.StateMachine
             {
                 // Si se recibió un paquete, lo manejamos
                 _receiver.HandleReceivedPacket(receivedPacket);
+                _receiver.ChangeState(new ReceivingFileState(_receiver));
             }
         }
     }
