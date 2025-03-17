@@ -21,4 +21,3 @@ namespace CodecLibrary.Codecs
         }
     }
 }
-

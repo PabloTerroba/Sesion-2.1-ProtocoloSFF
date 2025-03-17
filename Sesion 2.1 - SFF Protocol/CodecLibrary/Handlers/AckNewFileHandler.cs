@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using CodecLibrary.Handlers;
 using CodecLibrary;
 using CodecLibrary.Messages;
@@ -80,3 +81,35 @@ public class AckNewFileHandler : IPacketHandler
         _sender.SendPacket(newFileCod); // Reenviar el paquete
     }
 }
+=======
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using CodecLibrary.Messages;
+using CodecLibrary.States;
+using CodecLibrary.Networking;
+
+
+namespace CodecLibrary.Handlers
+{
+    public class AckNewFileHandler : IPacketHandler
+    {
+        private Sender _sender;
+
+        public AckNewFileHandler(Sender sender)
+        {
+            _sender = sender;
+        }
+
+        public void Handle(Packet packet)
+        {
+            if (packet is AckNewFile)
+            {
+                Console.WriteLine("✅ Transferencia aceptada. Iniciando envío de datos.");
+                _sender.ChangeState(new SendingFileState(_sender));
+            }
+        }
+    }
+
+}
+>>>>>>> 4fe09b8ee82d800eacbfb813cb6fc9571734db42
