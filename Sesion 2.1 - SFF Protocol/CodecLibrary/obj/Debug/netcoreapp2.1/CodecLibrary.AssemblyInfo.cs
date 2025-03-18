@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CodecLibrary")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4d68b641ff539ea2467ef918fea0a107dbbdeef9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3a4dbc79f282fd90a99c0fc624a190686f32b5a7")]
 [assembly: System.Reflection.AssemblyProductAttribute("CodecLibrary")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CodecLibrary")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

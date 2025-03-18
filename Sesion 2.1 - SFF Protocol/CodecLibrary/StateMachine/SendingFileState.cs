@@ -24,8 +24,8 @@ public class SendingFileState : SenderState
         _fileData = File.ReadAllBytes(_filePath);
 
         // Manejador para los AckData
-        _packetHandlerMap.Add((int)PacketBodyType.AckData, new AckDataHandler(sender, this));
-        _packetHandlerMap.Add((int)PacketBodyType.Discon, new AckDisconHandler(sender, this)); // Manejador para Discon ACK
+        _packetHandlerMap.Add(PacketBodyType.AckData, new AckDataHandler(sender, this));
+        _packetHandlerMap.Add(PacketBodyType.Discon, new AckDisconHandler(sender, this)); // Manejador para Discon ACK
     }
 
     public override void HandleEvents()

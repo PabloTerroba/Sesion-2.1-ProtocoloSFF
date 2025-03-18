@@ -2,58 +2,69 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
-class Receiver
+namespace CodecLibrary
 {
-    private UdpClient _udpServer;
-    private IPEndPoint _remoteEndPoint;
-    private FileStream _fileStream;
-    private string _fileName;
-    private bool _receivingFile = false;
-
-    public Receiver(UdpClient udpServer)
+    public class Receiver
     {
-        _udpServer = udpServer;
-        _remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-    }
+        private UdpClient _udpServer; // Usamos _udpServer
+        private IPEndPoint _remoteEndPoint; // Esta es la variable que estamos usando para el endpoint remoto
+        private FileStream _fileStream;
+        private string _fileName;
+        private bool _receivingFile = false;
+        private State _state;
 
-    public void HandleEvents()
-    {
-        byte[] receivedData = _udpServer.Receive(ref _remoteEndPoint);
-        ProcessPacket(receivedData);
-    }
-
-    private void ProcessPacket(byte[] packet)
-    {
-        byte messageType = packet[0];
-
-        switch (messageType)
+        public Receiver(UdpClient udpServer)
         {
-            case 1: // NewFile
-                _fileName = Encoding.UTF8.GetString(packet, 1, packet.Length - 1);
-                _fileStream = new FileStream(_fileName, FileMode.Create, FileAccess.Write);
-                _receivingFile = true;
-                Console.WriteLine($"[Receiver] Recibiendo archivo: {_fileName}");
-                break;
+            _udpServer = udpServer;
+            _remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);  // Escuchar en cualquier IP
+            _state = new WaitingForRequestState(this);  // Establecer estado inicial
+        }
 
-            case 2: // Data
-                if (_receivingFile && _fileStream != null)
-                {
-                    _fileStream.Write(packet, 1, packet.Length - 1);
-                    Console.WriteLine($"[Receiver] Recibidos {packet.Length - 1} bytes.");
-                }
-                break;
+        // Método que maneja eventos del estado
+        public void HandleEvents()
+        {
+            _state.HandleEvents();
+        }
 
-            case 3: // Discon
-                _fileStream?.Close();
-                _receivingFile = false;
-                Console.WriteLine("[Receiver] Transferencia finalizada. Archivo guardado.");
-                break;
+        // Cambiar el estado en el receptor
+        public void ChangeState(State state)
+        {
+            _state = state;
+        }
 
-            default:
-                Console.WriteLine("[Receiver] Mensaje desconocido.");
-                break;
+        // Métodos getter
+        public UdpClient GetUdpClient()
+        {
+            return _udpServer;  // Usamos _udpServer aquí
+        }
+
+
+        public IPEndPoint GetEndPoint()
+        {
+            return _remoteEndPoint;  // Usamos _remoteEndPoint
+        }
+
+        // Función para enviar un paquete UDP
+        public void SendPacket(byte[] data)
+        {
+            _udpServer.Send(data, data.Length, _remoteEndPoint);  // Usamos _udpServer y _remoteEndPoint
+            Console.WriteLine("[Receiver] Paquete enviado.");
+        }
+        public void SetFileName(string fileName)
+        {
+            _fileName = fileName;
+        }
+        public string GetFileName()
+        {
+            return _fileName;
+        }
+        // Función para recibir un paquete UDP
+        public byte[] ReceivePacket()
+        {
+            var receivedData = _udpServer.Receive(ref _remoteEndPoint);  // Usamos _udpServer y _remoteEndPoint
+            Console.WriteLine("[Receiver] Paquete recibido.");
+            return receivedData;
         }
     }
 }

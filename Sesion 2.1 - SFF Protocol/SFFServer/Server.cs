@@ -2,8 +2,9 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using CodecLibrary;
 
-class Server
+public class Server
 {
     private const int Port = 9000; // Puerto UDP para el servidor
     private UdpClient _udpServer;

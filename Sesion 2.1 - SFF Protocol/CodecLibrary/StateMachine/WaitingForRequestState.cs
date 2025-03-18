@@ -1,28 +1,25 @@
-﻿using CodecLibrary.Messages;
+﻿using CodecLibrary;
 using CodecLibrary.Handlers;
+using CodecLibrary.Messages;
+using CodecLibrary.StateMachine;
 using System;
+using System.Net.Sockets;
 
-namespace CodecLibrary.StateMachine
+public class WaitingForRequestState : ReceiverState
 {
-    public class WaitingForRequestState : ReceiverState
+    public WaitingForRequestState(Receiver receiver) : base(receiver)
     {
-        public WaitingForRequestState(Receiver receiver) : base(receiver)
-        {
-            // Aquí podemos registrar el manejador del paquete NewFile
-            _receiver.RegisterHandler(PacketBodyType.NewFile, new NewFileHandler(_receiver));
-        }
+    }
 
-        public override void HandleEvents()
-        {
-            // El estado espera recibir un paquete NewFile
-            Console.WriteLine("Esperando solicitud de archivo (NewFile)...");
-            var receivedPacket = _receiver.GetReceivedPacket();  // Suponiendo que GetReceivedPacket obtiene el paquete recibido
-            if (receivedPacket != null)
-            {
-                // Si se recibió un paquete, lo manejamos
-                _receiver.HandleReceivedPacket(receivedPacket);
-                _receiver.ChangeState(new ReceivingFileState(_receiver));
-            }
-        }
+    public override void HandleEvents()
+    {
+        base.HandleEvents();
+    }
+    protected override Packet Receive()
+    {
+        byte[] packetBytes = null;
+        packetBytes = _receiver.ReceivePacket();
+        Packet packet = packetBytes.Decode();// Esto es lo que no sé
+        return packet;
     }
 }

@@ -3,8 +3,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Linq;
+using CodecLibrary;
 
-class Client
+public class Client
 {
     private const string ServerIP = "127.0.0.1"; // IP del servidor
     private const int ServerPort = 9000;

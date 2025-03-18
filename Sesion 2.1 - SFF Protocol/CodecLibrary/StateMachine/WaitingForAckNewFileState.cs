@@ -12,8 +12,7 @@ public class WaitingForAckNewFileState : SenderState
     {
         // Crear el paquete NewFile con el nombre del archivo
         _filePath = _sender.GetFilePath();
-        string fileName=_filePath.Split('\\').Last(); // Obtenemos el nombre del archivo
-        NewFile newFilePacket = new NewFile(fileName,0,new byte[0]);
+        NewFile newFilePacket = new NewFile(_filePath,0,new byte[0]);
         //Codificación
         byte[] newFileCod = new byte[0];
         // Enviar el paquete NewFile
